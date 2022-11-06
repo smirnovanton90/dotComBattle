@@ -2,10 +2,10 @@ package org.example;
 
 import java.util.ArrayList;
 
-public class DotComTest {
+public class DotCom_Test {
     public static void main(String[] args) {
 
-        DotCom dot = new DotCom(name);
+        DotCom dot = new DotCom();
 
         ArrayList<String> locations = new ArrayList<>();
         locations.add("A1");

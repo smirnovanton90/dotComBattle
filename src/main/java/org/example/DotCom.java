@@ -3,9 +3,12 @@ package org.example;
 import java.util.ArrayList;
 
 public class DotCom {
+
+    //VARIABLES
     private String name;
     private ArrayList<String> locationCells;
 
+    //SETTERS
     public void setName(String name) {
         this.name = name;
     }
@@ -13,6 +16,12 @@ public class DotCom {
         locationCells = loc;
     }
 
+    //GETTERS
+    public String getName() {
+        return name;
+    }
+
+    //METHODS
     public String checkYourself (String userInput) {
         String result = "Мимо";
 
@@ -28,6 +37,7 @@ public class DotCom {
         }
         return result;
     }
+
 
 
 }
