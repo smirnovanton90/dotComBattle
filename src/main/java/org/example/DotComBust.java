@@ -2,14 +2,18 @@ package org.example;
 
 import java.util.ArrayList;
 
-public class SimpleDotComGame {
+public class DotComBust {
+
+    private ArrayList<Character> rows = new ArrayList<>();
+    private ArrayList<Integer> collumns = new ArrayList<>();
+
 
     public static void main(String[] args) {
         int numOfGuesses = 0;
         GameHelper helper = new GameHelper();
-        SimpleDotCom theDotCom = new SimpleDotCom();
+        DotCom theDotCom = new DotCom(name);
         int randomNum = (int) (Math.random()*5);
-        int[] locations = {randomNum, randomNum+1, randomNum+2};
+        ArrayList<String> locations = new ArrayList<>();
         theDotCom.setLocationCells(locations);
         boolean isAlive = true;
         ArrayList<String> guesses = new ArrayList<>();
