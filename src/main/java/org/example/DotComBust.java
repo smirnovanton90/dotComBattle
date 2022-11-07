@@ -52,7 +52,7 @@ public class DotComBust {
         String result = "Мимо";
         for (DotCom dotComToTest : dotComsList) {
             result = dotComToTest.checkYourself(userGuess);
-            if (result.equals("Попал")) { //TODO сделать не текс, а ссылки
+            if (result.equals("Попал")) { //TODO сделать не текст, а ссылки
                 break;
             }
             if (result.equals("Потопил")) {

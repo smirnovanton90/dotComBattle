@@ -20,11 +20,9 @@ public class GameHelper {
             System.out.println("IOException: " + var4);
         }
 
+
+
         return inputLine.toLowerCase();
     }
 
-    public ArrayList<String> placeDotCom(int comSize) {
-
-        return new ArrayList<>();
-    }
 }
