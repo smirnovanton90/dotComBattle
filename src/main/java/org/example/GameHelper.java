@@ -25,4 +25,7 @@ public class GameHelper {
         return inputLine.toLowerCase();
     }
 
+    public ArrayList<String> placeDotCom(int i) {
+        return new ArrayList<>();
+    }
 }
