@@ -5,12 +5,19 @@ import java.util.ArrayList;
 public class DotComBust {
 
     //VARIABLES
-    //TODO сделать проверку на попадание в обозначенный периметр
+
     private ArrayList<Character> rows = new ArrayList<>();
     private ArrayList<Character> collumns = new ArrayList<>();
     private ArrayList<DotCom> dotComsList = new ArrayList<>();
     private GameHelper helper = new GameHelper();
     private int numOfGuesses = 0;
+    private int numOfRows;
+    private final int maxNumOfRows = 26; //Максимальное количество строк в игровом поле
+    private int numOfColumns;
+    private final int maxNumOfColumns = 26; //Максимальное количество столбцов в игровом поле
+    private int numOfComs;
+    private int maxNumOfComs;
+    private int averageSize = 3; //Средний размер сайта
 
     //SETTERS
     public void setRows(ArrayList<Character> rows) {
@@ -21,42 +28,75 @@ public class DotComBust {
     }
 
     //METHODS
-    private void setUpGame() {
-        //TODO Сделать запрос количества сайтов и их имен (валидация?!)
-        DotCom one = new DotCom();
-        one.setName("Pets.com");
-        DotCom two = new DotCom();
-        two.setName("eToys.com");
-        DotCom three = new DotCom();
-        three.setName("Go2.com");
-        dotComsList.add(one);
-        dotComsList.add(two);
-        dotComsList.add(three);
-
-        for (DotCom dotComToSet : dotComsList) {
-            dotComToSet.setLocationCells(helper.placeDotCom(3));
-        }
+    private boolean setUpGame(DotComBust gameToSet) {
 
         //Формируем поле для игры
-        //TODO Сделать запрос размера поля и сформировать автоматически ЧЕРЕЗ setter!
-        rows.add('A');
-        rows.add('B');
-        rows.add('C');
-        rows.add('D');
-        rows.add('E');
-        rows.add('F');
-        rows.add('G');
-        collumns.add('0');
-        collumns.add('1');
-        collumns.add('2');
-        collumns.add('3');
-        collumns.add('4');
-        collumns.add('5');
-        collumns.add('6');
+        //Запрашиваем у игрока количество строк поля и проверяем корректность ввода
+        numOfRows = Integer.parseInt(GameHelper.getUserInput("Введите количество строк игрового поля: "));
+        if (numOfRows == 0) {
+            System.out.println("Количество строк игрового поля не может быть 0!");
+            return false;
+        }
+        if (numOfComs > maxNumOfRows) {
+            System.out.println("Количество строк игрового поля не может быть более " + maxNumOfRows);
+            return false;
+        }
+        //Устанавливаем строки поля
+        ArrayList<Character> rowsToSet = new ArrayList<>();
+        for (int i = 0; i < (numOfRows - 1); i++) {
+            rowsToSet.add((char) (i+65));
+        }
+        gameToSet.setRows(rowsToSet);
 
+        //Запрашиваем у игрока количество столбцов поля и проверяем корректность ввода
+        numOfColumns = Integer.parseInt(GameHelper.getUserInput("Введите количество колонок игрового поля: "));
+        if (numOfColumns == 0) {
+            System.out.println("Количество колонок игрового поля не может быть 0!");
+            return false;
+        }
+
+        if (numOfColumns > maxNumOfColumns) {
+            System.out.println("Количество колонок игрового поля не может быть более " + maxNumOfColumns);
+            return false;
+        }
+        //Устанавливаем колонки поля
+        ArrayList<Character> columnsToSet = new ArrayList<>();
+        for (int i = 1; i < (numOfColumns); i++) {
+            columnsToSet.add(Character.forDigit(i , 10));
+        }
+        gameToSet.setCollumns(columnsToSet);
+
+        maxNumOfComs = ((numOfRows * numOfColumns) / averageSize); //TODO Уточнить расчет переменной maxNumOfComs
+
+        //Запрашиваем у игрока количество сайтов и проверяем корректность ввода
+        numOfComs = Integer.parseInt(GameHelper.getUserInput("Введите количество сайтов, которые хотите отправить ко дну: "));
+        if (numOfComs == 0) {
+            System.out.println("Количество сайтов не может быть 0!");
+            return false;
+        }
+        if (numOfComs > maxNumOfComs) {
+            System.out.println("Введено слишком большое количество сайтов! Введите значение не более " + maxNumOfComs);
+            return false;
+        }
+        //Создаем сайты
+        for (int i = 0; i < numOfComs - 1;i++) {
+            DotCom newDotCom = new DotCom();
+            newDotCom.setName("" + (i+1));
+            dotComsList.add(newDotCom);
+        }
+
+        for (DotCom dotComToSet : dotComsList) {
+            dotComToSet.setLocationCells(helper.placeDotCom(numOfComs));
+        }
+
+
+        //Информация об игре
         System.out.println("Ваша цель - потопить три сайта.");
-        System.out.println(one.getName() + ", " + two.getName() + ", " + three.getClass());
+        //TODO исправить вывод названий сайтов
+//        System.out.println(one.getName() + ", " + two.getName() + ", " + three.getClass());
         System.out.println("Попытайтесь потопить их за минимальное количество ходов!");
+
+        return true; //Игра сформирована, возвращаем значение true
     }
     private void startPlaying() {
         while (!dotComsList.isEmpty()) {
@@ -100,8 +140,11 @@ public class DotComBust {
     }
 
     public static void main(String[] args) {
+        //Создаем новую игру
         DotComBust game = new DotComBust();
-        game.setUpGame();
+
+        //TODO сделать цикл с повторением до тех пор пока игра не будет сформирована. Если больше 5-и попыток - завершаем программу
+        game.setUpGame(game);
         game.startPlaying();
     }
 

@@ -22,6 +22,7 @@ public class DotCom {
     }
 
     //METHODS
+    //TODO сделать проверку на попадание в обозначенный периметр
     public String checkYourself (String userInput) {
         String result = "Мимо";
         int index = locationCells.indexOf(userInput);
