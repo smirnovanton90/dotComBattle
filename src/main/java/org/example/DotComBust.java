@@ -4,11 +4,13 @@ import java.util.ArrayList;
 
 public class DotComBust {
 
+
     //VARIABLES
 
     private ArrayList<Character> rows = new ArrayList<>();
-    private ArrayList<Character> collumns = new ArrayList<>();
+    private ArrayList<Character> columns = new ArrayList<>();
     private ArrayList<DotCom> dotComsList = new ArrayList<>();
+    private ArrayList<String> cellsTaken = new ArrayList<>(); // Занятые сайтами ячейки на поле
     private GameHelper helper = new GameHelper();
     private int numOfGuesses = 0;
     private int numOfRows;
@@ -18,96 +20,129 @@ public class DotComBust {
     private int numOfComs;
     private int maxNumOfComs;
     private int averageSize = 3; //Средний размер сайта
+    private boolean gameIsSet = false;
 
     //SETTERS
     public void setRows(ArrayList<Character> rows) {
         this.rows = rows;
     }
-    public void setCollumns(ArrayList<Character> collumns) {
-        this.collumns = collumns;
+    public void setColumns(ArrayList<Character> columns) {
+        this.columns = columns;
     }
 
     //METHODS
-    private boolean setUpGame(DotComBust gameToSet) {
+    private void setUpGame(DotComBust gameToSet) {
 
         //Формируем поле для игры
         //Запрашиваем у игрока количество строк поля и проверяем корректность ввода
-        numOfRows = Integer.parseInt(GameHelper.getUserInput("Введите количество строк игрового поля: "));
+        try {
+            numOfRows = Integer.parseInt(GameHelper.getUserInput("Введите количество строк игрового поля: "));
+        } catch (NumberFormatException e) {
+            System.out.println("Требуется ввести цифру отличную от 0! Попробуйте еще раз!");
+            gameToSet.gameIsSet = false;
+            return;
+        }
         if (numOfRows == 0) {
             System.out.println("Количество строк игрового поля не может быть 0!");
-            return false;
+            gameToSet.gameIsSet = false;
+            return;
         }
         if (numOfComs > maxNumOfRows) {
             System.out.println("Количество строк игрового поля не может быть более " + maxNumOfRows);
-            return false;
+            gameToSet.gameIsSet = false;
+            return;
         }
         //Устанавливаем строки поля
         ArrayList<Character> rowsToSet = new ArrayList<>();
-        for (int i = 0; i < (numOfRows - 1); i++) {
-            rowsToSet.add((char) (i+65));
+        for (int i = 0; i < numOfRows; i++) {
+            rowsToSet.add((char) (i+97));
         }
         gameToSet.setRows(rowsToSet);
 
         //Запрашиваем у игрока количество столбцов поля и проверяем корректность ввода
-        numOfColumns = Integer.parseInt(GameHelper.getUserInput("Введите количество колонок игрового поля: "));
+        try {
+            numOfColumns = Integer.parseInt(GameHelper.getUserInput("Введите количество колонок игрового поля: "));
+        } catch (NumberFormatException e) {
+            System.out.println("Требуется ввести цифру отличную от 0! Попробуйте еще раз!");
+            gameToSet.gameIsSet = false;
+            return;
+        }
         if (numOfColumns == 0) {
             System.out.println("Количество колонок игрового поля не может быть 0!");
-            return false;
+            gameToSet.gameIsSet = false;
+            return;
         }
 
         if (numOfColumns > maxNumOfColumns) {
             System.out.println("Количество колонок игрового поля не может быть более " + maxNumOfColumns);
-            return false;
+            gameToSet.gameIsSet = false;
+            return;
         }
         //Устанавливаем колонки поля
         ArrayList<Character> columnsToSet = new ArrayList<>();
-        for (int i = 1; i < (numOfColumns); i++) {
+        for (int i = 0; i < numOfColumns; i++) {
             columnsToSet.add(Character.forDigit(i , 10));
         }
-        gameToSet.setCollumns(columnsToSet);
+        gameToSet.setColumns(columnsToSet);
 
         maxNumOfComs = ((numOfRows * numOfColumns) / averageSize); //TODO Уточнить расчет переменной maxNumOfComs
 
         //Запрашиваем у игрока количество сайтов и проверяем корректность ввода
-        numOfComs = Integer.parseInt(GameHelper.getUserInput("Введите количество сайтов, которые хотите отправить ко дну: "));
+        try {
+            numOfComs = Integer.parseInt(GameHelper.getUserInput("Введите количество сайтов, которые хотите отправить ко дну: "));
+        } catch (NumberFormatException e) {
+            System.out.println("Требуется ввести цифру отличную от 0! Попробуйте еще раз!");
+            gameToSet.gameIsSet = false;
+            return;
+        }
         if (numOfComs == 0) {
             System.out.println("Количество сайтов не может быть 0!");
-            return false;
+            gameToSet.gameIsSet = false;
+            return;
         }
         if (numOfComs > maxNumOfComs) {
             System.out.println("Введено слишком большое количество сайтов! Введите значение не более " + maxNumOfComs);
-            return false;
+            gameToSet.gameIsSet = false;
+            return;
         }
-        //Создаем сайты
-        for (int i = 0; i < numOfComs - 1;i++) {
+        //Создаем сайты и размещаем их на доске
+        for (int i = 0; i < numOfComs;i++) {
             DotCom newDotCom = new DotCom();
             newDotCom.setName("" + (i+1));
             dotComsList.add(newDotCom);
+            //Получаем свободные ячейки для размещения
+            ArrayList<String> newDotComLocation = GameHelper.placeDotCom(cellsTaken, numOfRows, numOfColumns);
+            if (newDotComLocation.isEmpty()) {
+                finishGame(2);
+            }
+            //Размещаем сайт в указанные ячейки
+            newDotCom.setLocationCells(newDotComLocation);
+            //Добавляем в занятые ячейки на поле все ячейки нового сайта
+            for (String location : newDotComLocation) {
+                cellsTaken.add(location);
+            }
         }
-
-        for (DotCom dotComToSet : dotComsList) {
-            dotComToSet.setLocationCells(helper.placeDotCom(numOfComs));
-        }
-
 
         //Информация об игре
-        System.out.println("Ваша цель - потопить три сайта.");
-        //TODO исправить вывод названий сайтов
-//        System.out.println(one.getName() + ", " + two.getName() + ", " + three.getClass());
+        System.out.println("Ваша цель - потопить " + numOfComs + " сайт" + GameHelper.endingCalc(numOfComs) + ".");
+        for (int i = 0; i < numOfComs-1; i ++) {
+            System.out.print(dotComsList.get(i).getName() + ", ");
+        }
+        System.out.println(dotComsList.get(numOfComs-1).getName() + ".");
         System.out.println("Попытайтесь потопить их за минимальное количество ходов!");
 
-        return true; //Игра сформирована, возвращаем значение true
+        gameToSet.gameIsSet = true; //Игра сформирована, возвращаем значение true
     }
     private void startPlaying() {
         while (!dotComsList.isEmpty()) {
-            checkUserGuess(helper.getUserInput("Сделайте ход"));
+            checkUserGuess(GameHelper.getUserInput("Сделайте ход"));
         }
-        finishGame();
+        finishGame(0);
     }
     private void checkUserGuess (String userGuess) {
         //Валидация ввода
         boolean validation = false;
-        if (userGuess.length() != 2 || !rows.contains(userGuess.charAt(0)) || !collumns.contains(userGuess.charAt(1))) {
+        if (userGuess.length() != 2 || !rows.contains(userGuess.charAt(0)) || !columns.contains(userGuess.charAt(1))) {
             System.out.println("Некорректный ввод!");
         } else {
             validation = true;
@@ -115,38 +150,71 @@ public class DotComBust {
         //Если валидация пройдена, то проверяем введенный пользователем вариант
         if (validation) {
             numOfGuesses++;
-            String result = "Мимо";
+            String result = DotCom.RESULTMISS;
             for (DotCom dotComToTest : dotComsList) {
                 result = dotComToTest.checkYourself(userGuess);
-                if (result.equals("Попал")) { //TODO сделать не текст, а ссылки
+                if (result.equals(DotCom.RESULTHIT)) {
                     break;
                 }
-                if (result.equals("Потопил")) {
+                if (result.equals(DotCom.RESULTDEAD)) {
                     dotComsList.remove(dotComToTest);
                 }
             }
             System.out.println(result);
         }
     }
-    private void finishGame () {
-        System.out.println("Все сайты ушли ко дну! Ваши акции теперь ничего не стоят.");
-        if (numOfGuesses <= 18) {
-            System.out.println("Это заняло у вас всего " + numOfGuesses + " попыток.");
-            System.out.println("Вы успели выбраться до того, как ваши вложения утонули.");
-        } else {
-            System.out.println("Это заняло у вас довольно много времени. " + numOfGuesses + " попыток.");
-            System.out.println("Рыбы водят хороводы вокруг ваших вложений.");
+
+    //Окончание игры
+    private void finishGame (int finishCode) {
+        switch (finishCode) {
+            case 0:
+                System.out.println("Все сайты ушли ко дну! Ваши акции теперь ничего не стоят.");
+                if (numOfGuesses <= 18) {
+                    System.out.println("Это заняло у вас всего " + numOfGuesses + " попыток.");
+                    System.out.println("Вы успели выбраться до того, как ваши вложения утонули.");
+                } else {
+                    System.out.println("Это заняло у вас довольно много времени. " + numOfGuesses + " попыток.");
+                    System.out.println("Рыбы водят хороводы вокруг ваших вложений.");
+                }
+                System.exit(1);
+            case 1:
+                System.out.println("Так и не получилось завестись... В следующий раз получится! :)");
+                System.out.println();
+                System.exit(1);
+            case 2:
+                System.out.println("Мы долго пытались разместить сайты, но у нас не получилось... Попробуйте поменять параметры игры и запустить ее снова!");
+                System.out.println();
+                System.exit(1);
         }
     }
 
+    private static boolean checkCellInField (int rowNumber, int columnNumber, String cell) {
+        if (rowNumber != 0 && columnNumber != 0) {
+            int[] adress = GameHelper.convertCell(cell);
+            return rowNumber <= adress[0] && columnNumber <= adress[1];
+        } else {
+            return false;
+        }
+    }
     public static void main(String[] args) {
         //Создаем новую игру
         DotComBust game = new DotComBust();
 
-        //TODO сделать цикл с повторением до тех пор пока игра не будет сформирована. Если больше 5-и попыток - завершаем программу
-        game.setUpGame(game);
-        game.startPlaying();
+        //Пытаемся создать игру. Если по истечении 5 попыток игра так и не создана, то завершаем исполнение программы
+        for (int i = 0; i < 5; i++) {
+            if (game.gameIsSet) {
+                game.startPlaying();
+                break;
+            } else {
+                game.setUpGame(game);
+                if (!game.gameIsSet) {
+                    System.out.println("Осталось " + (5-(i+1)) + " попытки запустить игру!");
+                    System.out.println();
+                }
+            }
+        }
+        if (!game.gameIsSet) {
+            game.finishGame(1);
+        }
     }
-
-
 }

@@ -7,6 +7,9 @@ public class DotCom {
     //VARIABLES
     private String name;
     private ArrayList<String> locationCells;
+    public static final String RESULTMISS = "Мимо";
+    public static final String RESULTHIT = "Попал";
+    public static final String RESULTDEAD = "Потопил";
 
     //SETTERS
     public void setName(String name) {
@@ -22,16 +25,15 @@ public class DotCom {
     }
 
     //METHODS
-    //TODO сделать проверку на попадание в обозначенный периметр
     public String checkYourself (String userInput) {
-        String result = "Мимо";
+        String result = RESULTMISS;
         int index = locationCells.indexOf(userInput);
         if (index >= 0) {
             locationCells.remove(index);
             if (locationCells.isEmpty()) {
-                result = "Потопил";
+                result = RESULTDEAD;
             } else {
-                result = "Попал";
+                result = RESULTHIT;
             }
         }
         return result;

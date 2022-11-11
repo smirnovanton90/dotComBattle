@@ -5,13 +5,9 @@ import java.util.*;
 
 public class GameHelper {
     //VARIABLES
-    private static final String alphabet = "abcdefg";
-    private int gridLength = 7;
-    private int gridSize = 49;
-    private int[] grid = new int[gridSize];
-    private int comCount = 0;
 
     //METHODS
+    //Метод, который принимает пользовательский ввод
     public static String getUserInput(String prompt) {
         String inputLine = null;
         System.out.print(prompt + "  ");
@@ -28,52 +24,92 @@ public class GameHelper {
         return inputLine.toLowerCase();
     }
 
-    public ArrayList<String> placeDotCom(int comSize) {
-        ArrayList<String> alphaCells = new ArrayList<String>();
-        String[] alphaCoords = new String[comSize];
-        String temp = null;
-        int[] coords = new int[comSize];
-        int attempts = 0;
-        boolean success = false;
-        int location = 0;
+    //Метод, который размещает сайт
+    public static ArrayList<String> placeDotCom (ArrayList<String> takenCells, int rows, int columns) {
 
-        comCount++;
-        int incr = 1;
-        if ((comCount % 2) == 1) {
-            incr = gridLength;
-        }
+        ArrayList<String> result = new ArrayList<>();
 
-        while (!success & attempts++ < 200) {
-            location = (int) (Math.random() * gridSize);
-            int x = 0;
-            success = true;
-            while (success && x < comSize) {
-                if (grid[location] == 0) {
-                    coords[x++] = location;
-                    location += incr;
-                    if (location >= gridSize) {
-                        success = false;
+        String checkCell1;
+        String checkCell2;
+        String checkCell3;
+
+        int checkRow;
+        int checkColumn;
+
+        for (int i = 0; i <200; i++) {
+            checkRow = (int) (Math.random() * rows);
+            checkColumn = (int) (Math.random() * columns);
+
+            // проверка горизонтальных
+            for (int j = 0; j < 3; j++) {
+                if (checkColumn-2+j >=0) {
+                    checkCell1 = Character.toString(checkRow + 97) + Character.toString(checkColumn - 2 + j + 48);
+                    checkCell2 = Character.toString(checkRow + 97) + Character.toString(checkColumn - 1 + j + 48);
+                    checkCell3 = Character.toString(checkRow + 97) + Character.toString(checkColumn + j + 48);
+
+                    if (!takenCells.contains(checkCell1) && !takenCells.contains(checkCell2) && !takenCells.contains(checkCell3) &&
+                            checkRow < rows && checkColumn + j < columns) {
+                        result.add(checkCell1);
+                        result.add(checkCell2);
+                        result.add(checkCell3);
+                        return result;
                     }
-                    if (x > 0 && (location % gridLength == 0)) {
-                        success = false;
-                    }
-                } else {
-                    success = false;
                 }
             }
-        }
-        int x = 0;
-        int row = 0;
-        int column = 0;
-        while (x < comSize) {
-            grid[coords[x]] = 1;
-            row = (int) (coords[x] / gridLength);
-            column = coords[x] % gridLength;
-            temp = String.valueOf(alphabet.charAt(column));
+            // проверка вертикальных
+            for (int j = 0; j < 3; j++) {
+                if (checkRow-2+j >= 0) {
+                    checkCell1 = Character.toString(checkRow - 2 + j + 97) + Character.toString(checkColumn + 48);
+                    checkCell2 = Character.toString(checkRow - 1 + j + 97) + Character.toString(checkColumn + 48);
+                    checkCell3 = Character.toString(checkRow + j + 97) + Character.toString(checkColumn + 48);
 
-            alphaCells.add(temp.concat(Integer.toString(row)));
-            x++;
+                    if (!takenCells.contains(checkCell1) && !takenCells.contains(checkCell2) && !takenCells.contains(checkCell3) &&
+                            checkRow + j < rows && checkColumn < columns) {
+                        result.add(checkCell1);
+                        result.add(checkCell2);
+                        result.add(checkCell3);
+                        return result;
+                    }
+                }
+            }
+
         }
-        return alphaCells;
+        return result;
+    }
+
+    //Метод, который превращает адрес ячейки в два числа
+    public static int[] convertCell (String cell) {
+        int[] defaultResult = {0, 0};
+        int[] result = {0, 0};
+
+        //Валидация аргумента
+        if (cell.length() != 2) {
+            return defaultResult;
+        }
+        //Обработка первого символа
+        if (cell.charAt(0) < 97 || cell.charAt(0) > 122) {
+            return defaultResult;
+        } else {
+            result[0] = cell.charAt(0) - 64;
+        }
+        //Обработка второго символа
+        try {
+            result[1] = Integer.parseInt(cell.substring(1));
+        } catch (NumberFormatException e) {
+            return defaultResult;
+        }
+        return result;
+    }
+
+    //Метод, расчитывающий окончания для слова "сайт" в зависимости от их количества
+    public static String endingCalc (int number) {
+        if (number > 20 && number % 10 == 1 && number % 100 != 11) {
+            return "";
+        }
+        return switch (number) {
+            case 1 -> "";
+            case 2, 3, 4 -> "а";
+            default -> "ов";
+        };
     }
 }
