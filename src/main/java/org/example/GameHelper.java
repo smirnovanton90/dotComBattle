@@ -21,10 +21,15 @@ public class GameHelper {
         } catch (IOException e) {
             System.out.println("IOException: " + e);
         }
-        return inputLine.toLowerCase();
+        if (inputLine != null) {
+            return inputLine.toLowerCase();
+        } else {
+            return "";
+        }
     }
 
     //Метод, который размещает сайт
+    //TODO Сделать логику, чтобы сайты не размещались рядом друг с другом??
     public static ArrayList<String> placeDotCom (ArrayList<String> takenCells, int rows, int columns) {
 
         ArrayList<String> result = new ArrayList<>();
@@ -73,30 +78,6 @@ public class GameHelper {
                 }
             }
 
-        }
-        return result;
-    }
-
-    //Метод, который превращает адрес ячейки в два числа
-    public static int[] convertCell (String cell) {
-        int[] defaultResult = {0, 0};
-        int[] result = {0, 0};
-
-        //Валидация аргумента
-        if (cell.length() != 2) {
-            return defaultResult;
-        }
-        //Обработка первого символа
-        if (cell.charAt(0) < 97 || cell.charAt(0) > 122) {
-            return defaultResult;
-        } else {
-            result[0] = cell.charAt(0) - 64;
-        }
-        //Обработка второго символа
-        try {
-            result[1] = Integer.parseInt(cell.substring(1));
-        } catch (NumberFormatException e) {
-            return defaultResult;
         }
         return result;
     }

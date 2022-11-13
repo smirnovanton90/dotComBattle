@@ -6,20 +6,15 @@ public class DotComBust {
 
 
     //VARIABLES
-
     private ArrayList<Character> rows = new ArrayList<>();
     private ArrayList<Character> columns = new ArrayList<>();
-    private ArrayList<DotCom> dotComsList = new ArrayList<>();
-    private ArrayList<String> cellsTaken = new ArrayList<>(); // Занятые сайтами ячейки на поле
-    private GameHelper helper = new GameHelper();
+    private final ArrayList<DotCom> dotComsList = new ArrayList<>();
+    private final ArrayList<String> cellsTaken = new ArrayList<>(); // Занятые сайтами ячейки на поле
     private int numOfGuesses = 0;
-    private int numOfRows;
-    private final int maxNumOfRows = 26; //Максимальное количество строк в игровом поле
-    private int numOfColumns;
-    private final int maxNumOfColumns = 26; //Максимальное количество столбцов в игровом поле
+    public final int maxNumOfRows = 26; //Максимальное количество строк в игровом поле
+    public final int maxNumOfColumns = 26; //Максимальное количество столбцов в игровом поле
     private int numOfComs;
-    private int maxNumOfComs;
-    private int averageSize = 3; //Средний размер сайта
+    public final int averageSize = 3; //Средний размер сайта
     private boolean gameIsSet = false;
 
     //SETTERS
@@ -32,6 +27,9 @@ public class DotComBust {
 
     //METHODS
     private void setUpGame(DotComBust gameToSet) {
+
+        int numOfRows;
+        int numOfColumns;
 
         //Формируем поле для игры
         //Запрашиваем у игрока количество строк поля и проверяем корректность ввода
@@ -60,6 +58,7 @@ public class DotComBust {
         gameToSet.setRows(rowsToSet);
 
         //Запрашиваем у игрока количество столбцов поля и проверяем корректность ввода
+
         try {
             numOfColumns = Integer.parseInt(GameHelper.getUserInput("Введите количество колонок игрового поля: "));
         } catch (NumberFormatException e) {
@@ -85,7 +84,7 @@ public class DotComBust {
         }
         gameToSet.setColumns(columnsToSet);
 
-        maxNumOfComs = ((numOfRows * numOfColumns) / averageSize); //TODO Уточнить расчет переменной maxNumOfComs
+        int maxNumOfComs = ((numOfRows * numOfColumns) / averageSize); //TODO Уточнить расчет переменной maxNumOfComs
 
         //Запрашиваем у игрока количество сайтов и проверяем корректность ввода
         try {
@@ -118,9 +117,7 @@ public class DotComBust {
             //Размещаем сайт в указанные ячейки
             newDotCom.setLocationCells(newDotComLocation);
             //Добавляем в занятые ячейки на поле все ячейки нового сайта
-            for (String location : newDotComLocation) {
-                cellsTaken.add(location);
-            }
+            cellsTaken.addAll(newDotComLocation);
         }
 
         //Информация об игре
@@ -158,6 +155,7 @@ public class DotComBust {
                 }
                 if (result.equals(DotCom.RESULTDEAD)) {
                     dotComsList.remove(dotComToTest);
+                    break;
                 }
             }
             System.out.println(result);
@@ -167,7 +165,7 @@ public class DotComBust {
     //Окончание игры
     private void finishGame (int finishCode) {
         switch (finishCode) {
-            case 0:
+            case 0 -> {
                 System.out.println("Все сайты ушли ко дну! Ваши акции теперь ничего не стоят.");
                 if (numOfGuesses <= 18) {
                     System.out.println("Это заняло у вас всего " + numOfGuesses + " попыток.");
@@ -177,25 +175,20 @@ public class DotComBust {
                     System.out.println("Рыбы водят хороводы вокруг ваших вложений.");
                 }
                 System.exit(1);
-            case 1:
+            }
+            case 1 -> {
                 System.out.println("Так и не получилось завестись... В следующий раз получится! :)");
                 System.out.println();
                 System.exit(1);
-            case 2:
+            }
+            case 2 -> {
                 System.out.println("Мы долго пытались разместить сайты, но у нас не получилось... Попробуйте поменять параметры игры и запустить ее снова!");
                 System.out.println();
                 System.exit(1);
+            }
         }
     }
 
-    private static boolean checkCellInField (int rowNumber, int columnNumber, String cell) {
-        if (rowNumber != 0 && columnNumber != 0) {
-            int[] adress = GameHelper.convertCell(cell);
-            return rowNumber <= adress[0] && columnNumber <= adress[1];
-        } else {
-            return false;
-        }
-    }
     public static void main(String[] args) {
         //Создаем новую игру
         DotComBust game = new DotComBust();
