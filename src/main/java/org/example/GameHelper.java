@@ -30,6 +30,7 @@ public class GameHelper {
 
     //Метод, который размещает сайт
     //TODO Сделать логику, чтобы сайты не размещались рядом друг с другом??
+    //TODO Сделать возможность размещения сайтов вертикально (сейчас только горизонтально помещаются)
     public static ArrayList<String> placeDotCom (ArrayList<String> takenCells, int rows, int columns) {
 
         ArrayList<String> result = new ArrayList<>();

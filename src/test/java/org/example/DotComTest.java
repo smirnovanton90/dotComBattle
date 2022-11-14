@@ -2,6 +2,9 @@ package org.example;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+
 import java.util.ArrayList;
 
 class DotComTest {
@@ -25,8 +28,15 @@ class DotComTest {
         assertEquals(testDotCom.getName(), "Игра2");
     }
 
-    @Test
-    void setLocationCells_checkYourself_Test_1() { //Проверка сразу двух методов - setLocationCells и checkYourself
+    @ParameterizedTest
+    @CsvSource({"'A7', 'Мимо'",
+            "'H0', 'Мимо'",
+            "'10', 'Мимо'",
+            "'B1', 'Мимо'",
+            "'A1', 'Попал'",
+            "'A2', 'Попал'",
+            "'A3', 'Попал'"})
+    void setLocationCells_checkYourself_Test_1(String input, String result) { //Проверка сразу двух методов - setLocationCells и checkYourself - проверка на мимо и попадание
         ArrayList<String> loc = new ArrayList<>();
         loc.add("A1");
         loc.add("A2");
@@ -34,10 +44,18 @@ class DotComTest {
 
         testDotCom.setLocationCells(loc);
 
-        assertEquals("Мимо", testDotCom.checkYourself("A7"));
-        assertEquals("Мимо", testDotCom.checkYourself("H0"));
-        assertEquals("Мимо", testDotCom.checkYourself("10"));
-        assertEquals("Мимо", testDotCom.checkYourself("B1"));
+        assertEquals(result, testDotCom.checkYourself(input));
+    }
+
+    @Test
+    void setLocationCells_checkYourself_Test_2() { //Проверка сразу двух методов - setLocationCells и checkYourself - проверка на потопление
+        ArrayList<String> loc = new ArrayList<>();
+        loc.add("A1");
+        loc.add("A2");
+        loc.add("A3");
+
+        testDotCom.setLocationCells(loc);
+
         assertEquals("Попал", testDotCom.checkYourself("A1"));
         assertEquals("Попал", testDotCom.checkYourself("A2"));
         assertEquals("Потопил", testDotCom.checkYourself("A3"));
