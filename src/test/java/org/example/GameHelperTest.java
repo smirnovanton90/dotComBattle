@@ -1,7 +1,9 @@
 package org.example;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvFileSource;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -13,7 +15,8 @@ import static org.junit.jupiter.api.Assertions.*;
 class GameHelperTest {
 
     @Test
-    void placeDotCom_Test_1() { //Проверяем кейс, когда разместить невозможно
+    @DisplayName("Проверка кейса, когда разместить НЕвозможно")
+    void placeDotCom_Test_1() {
         ArrayList<String> testTakenCells = new ArrayList<>();
         testTakenCells.add("a0");
         testTakenCells.add("b1");
@@ -29,7 +32,8 @@ class GameHelperTest {
     }
 
     @Test
-    void placeDotCom_Test_2() { //Проверяем кейс, когда разместить возможно
+    @DisplayName("Проверка кейса, когда разместить возможно")
+    void placeDotCom_Test_2() {
 
         ArrayList<String> testTakenCells = new ArrayList<>();
         testTakenCells.add("a0");
@@ -44,8 +48,9 @@ class GameHelperTest {
     }
 
     @ParameterizedTest
+    @DisplayName("Проверка на отсутствие занятых ячеек")
     @ValueSource(strings = {"a0", "b1", "c2", "d3"})
-    void placeDotCom_Test_3(String testCase) { //Проверка на отсутствие занятых ячеек
+    void placeDotCom_Test_3(String testCase) {
 
         ArrayList<String> testTakenCells = new ArrayList<>();
         testTakenCells.add("a0");
@@ -60,7 +65,8 @@ class GameHelperTest {
     }
 
     @Test
-    void placeDotCom_Test_4() { //Проверка, что результат не входит за рамки поля
+    @DisplayName("Проверка, что результат не входит за рамки поля")
+    void placeDotCom_Test_4() {
 
         ArrayList<String> testTakenCells = new ArrayList<>();
         testTakenCells.add("a0");
@@ -92,7 +98,8 @@ class GameHelperTest {
         assertTrue(checkListInt.contains(Integer.parseInt(GameHelper.placeDotCom(testTakenCells, rows, columns).get(2).substring(1))));
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "{index} - {0} сайт{1}")
+    @DisplayName("Проверка окончаний")
     @CsvSource({"1, ''",
             "2, а",
             "3, а",
@@ -112,5 +119,12 @@ class GameHelperTest {
             "1571, ''"})
     void endingCalc_Test_1(int testCase, String result) {
         assertEquals(result, GameHelper.endingCalc(testCase));
+    }
+
+    @ParameterizedTest(name = "{index} - {0} сайт{1}")
+    @DisplayName("Проверка окончаний из файла")
+    @CsvFileSource(resources = "TestCases.csv", delimiter = '|', numLinesToSkip = 1)
+    void endingCalc_Test_2(String testCase, String result) {
+        assertEquals(result, testCase);
     }
 }
